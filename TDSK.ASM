@@ -12,7 +12,7 @@
 ;≥    ±±€  ±±±±±±±‹ ±±€ ±±€ ±±±±‹ﬂﬂ  ﬂ±±‹ﬂﬂ ±±±±±€ﬂ ±±±±±±€ ±±€  ±±‹ ≥
 ;≥     ﬂﬂ   ﬂﬂﬂﬂﬂﬂﬂ  ﬂﬂ  ﬂﬂ  ﬂﬂﬂﬂ      ﬂﬂ    ﬂﬂﬂﬂﬂ   ﬂﬂﬂﬂﬂﬂ  ﬂﬂ   ﬂﬂ ≥
 ;≥                                                                   ≥
-;≥           ∞∞±±≤≤€€≤≤±±∞∞   Versi¢n 2.3   ∞∞±±≤≤€€≤≤±±∞∞           ≥
+;≥           ∞∞±±≤≤€€≤≤±±∞∞   Versi¢n 2.3a  ∞∞±±≤≤€€≤≤±±∞∞           ≥
 ;≥                                                                   ≥
 ;≥                                                                   ≥
 ;≥     CONTROLADOR DE DISCO VIRTUAL PARA SISTEMAS DOS Y WINDOWS 3    ≥
@@ -56,6 +56,8 @@
    ;            ejecutable ocupa  2 Kbytes  menos en disco (a la tabla
    ;            ubicada al final del programa  se  le  asigna  memoria
    ;            en la cabecera del fichero EXE y no ocupando disco).
+   ;
+   ;                  For JWasm use jwasm -mz -Zm tdsk.asm
    ;
    ;   IMPORTANTE:  Cualquier cambio realizado en el programa debe ser
    ;                documentado,  indicando claramente en el listado y
@@ -847,6 +849,10 @@ valida_tsect:  MOV   AX,param_tsect
                CMP   AX,1024
                JE    valida_tclus
                CMP   AX,2048
+               JE    valida_tclus
+               CMP   AX,4096
+               JE    valida_tclus
+               CMP   AX,8192
                JNE   sintax_err
 valida_tclus:  CMP   param_tcluster,256
                JAE   sintax_err        ; debe estar entre 0..255
@@ -1971,7 +1977,7 @@ formatear_tdsk PROC
                REP   STOSB             ; a 0 resto del †rea de trabajo
                LEA   DI,area_trabajo
                ADD   DI,tsect
-               MOV   [DI-2],0AA55h     ; marca de sector v†lido
+               MOV   WORD PTR [DI-2],0AA55h     ; marca de sector v†lido
                CALL  escribe_sectAX    ; escribir sector BOOT (AX=0)
                LEA   DI,area_trabajo
                MOV   CX,tsect
